@@ -932,6 +932,7 @@ GameObject:
   - component: {fileID: 1761741130}
   - component: {fileID: 1761741133}
   - component: {fileID: 1761741134}
+  - component: {fileID: 1761741135}
   m_Layer: 0
   m_Name: hire
   m_TagString: Untagged
@@ -1068,6 +1069,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1761741135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1761741128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d677a5d8451b4fe591b0b34a6420436, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1812389206 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 162542, guid: 604c6a2a7f9c3484a86af004a7dcaf6a, type: 3}
