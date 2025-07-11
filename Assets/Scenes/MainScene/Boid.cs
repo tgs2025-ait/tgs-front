@@ -26,7 +26,7 @@ public class Boid : MonoBehaviour
         // 周囲のBoidをスキャン
         foreach (Boid other in controller.allBoids)
         {
-            if (other == this) continue;
+            if (other == this || other == null) continue;//自身のオブジェクトか破棄されたオブジェクトの場合
 
             float dist = Vector3.Distance(transform.position, other.transform.position);
 
