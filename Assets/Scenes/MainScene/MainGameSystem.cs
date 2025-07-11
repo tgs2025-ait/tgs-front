@@ -17,7 +17,7 @@ public class MainGameSystem : MonoBehaviour
         // シフトキーが押されたらシーンを切り替える
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            SceneManager.LoadScene("FinishScreen");
+            SceneManager.LoadScene("FinishScene");
         }
         scoreText.text = "Score: " + PointMemory.point.ToString();
         
