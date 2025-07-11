@@ -1,17 +1,25 @@
 using UnityEngine;
-
-public class CollisionDetector : MonoBehaviour
+using UnityEngine.SceneManagement;
+using TMPro;
+public class MainGameSystem : MonoBehaviour
 {
-
+    public TMP_Text scoreText;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        PointMemory.point = 0;
         
     }
 
     // Update is called once per frame
     void Update()
     {
+        // シフトキーが押されたらシーンを切り替える
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SceneManager.LoadScene("FinishScreen");
+        }
+        scoreText.text = "Score: " + PointMemory.point.ToString();
         
     }
     void OnTriggerEnter(Collider collision)
@@ -22,7 +30,10 @@ public class CollisionDetector : MonoBehaviour
         {
             GameObject toRemove = collision.gameObject.transform.parent.parent.gameObject;
             Debug.Log("消去:"+ toRemove.name);
+            PointMemory.point += 1200;
             Destroy(toRemove);
+
+
         }
         
         // 衝突情報を取得する例
