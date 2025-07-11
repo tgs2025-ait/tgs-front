@@ -1,18 +1,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-public class KeyEvent : MonoBehaviour
+using UnityEngine.UI;
+public class Script : MonoBehaviour
 {
+    public Text scoreText;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        //Debug.Log(PointMemory.point);
+        scoreText.text = PointMemory.point.ToString();
     }
 
     // Update is called once per frame
     void Update()
     {
-                // Enterキーが押されたときの処理
-        if (Input.GetKeyDown(KeyCode.Return))
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             SceneManager.LoadScene("WelcomeScene");
         }
