@@ -9,7 +9,11 @@ public class SerialReceive : MonoBehaviour
     //上記URLのSerialHandler.cのクラス
     public SerialHandler serialHandler;
 
-  void Start()
+    // 静的変数として加速度値を保存（他のスクリプトからアクセス可能）
+    public static float yAcceleration = 0f;
+    public static float zAcceleration = 0f; // AZの値を保存する静的変数を追加
+
+    void Start()
     {
         //信号を受信したときに、そのメッセージの処理を行う
         serialHandler.OnDataReceived += OnDataReceived;
@@ -22,11 +26,50 @@ public class SerialReceive : MonoBehaviour
                 new string[] { "\n" }, System.StringSplitOptions.None);
         try
         {
-            Debug.Log(data[0]);//Unityのコンソールに受信データを表示
+            // 受信した生データをログに表示
+            Debug.Log($"受信データ: {data[0]}");
+            
+            // データフォーマット: "AX:%.2f AY:%.2f AZ:%.2f" からAYとAZの値を抽出
+            string[] parts = data[0].Split(' ');
+            Debug.Log($"分割されたデータ: {string.Join(", ", parts)}");
+            
+            foreach (string part in parts)
+            {
+                if (part.StartsWith("AY:"))
+                {
+                    string yValue = part.Substring(3); // "AY:"を除去
+                    Debug.Log($"AY部分: {part}, 抽出された値: {yValue}");
+                    
+                    if (float.TryParse(yValue, out float parsedValue))
+                    {
+                        yAcceleration = parsedValue;
+                        Debug.Log($"Y軸加速度: {yAcceleration}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"AYの値を数値に変換できませんでした: {yValue}");
+                    }
+                }
+                else if (part.StartsWith("AZ:"))
+                {
+                    string zValue = part.Substring(3); // "AZ:"を除去
+                    Debug.Log($"AZ部分: {part}, 抽出された値: {zValue}");
+                    
+                    if (float.TryParse(zValue, out float parsedValue))
+                    {
+                        zAcceleration = parsedValue;
+                        Debug.Log($"Z軸加速度: {zAcceleration}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"AZの値を数値に変換できませんでした: {zValue}");
+                    }
+                }
+            }
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning(e.Message);//エラーを表示
+            Debug.LogWarning($"シリアルデータ処理エラー: {e.Message}");//エラーを表示
         }
     }
 }
