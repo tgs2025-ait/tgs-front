@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: 0a1c5f1ae8f3e994f808a858e81cc7e2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - scoreText: {instanceID: 0}
+  - se_beat_enemy: {fileID: 8300000, guid: a74437454b00f49078bb35a51dfb36bb, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

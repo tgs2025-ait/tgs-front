@@ -5,10 +5,12 @@ public class MainGameSystem : MonoBehaviour
 {
     public TMP_Text scoreText;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private AudioSource audioSource = null;
+    public AudioClip se_beat_enemy;
     void Start()
     {
         PointMemory.point = 0;
-        
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -32,7 +34,7 @@ public class MainGameSystem : MonoBehaviour
             Debug.Log("消去:"+ toRemove.name);
             PointMemory.point += 1200;
             Destroy(toRemove);
-
+            PlaySE(se_beat_enemy);
 
         }
         
@@ -42,5 +44,17 @@ public class MainGameSystem : MonoBehaviour
         // {
         //     Debug.Log("接触点位置: " + contact.point);
         // }
+    }
+
+    public void PlaySE(AudioClip clip)
+    {
+        if (audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+        else
+        {
+            Debug.Log("audiosource=null");
+        }
     }
 }
