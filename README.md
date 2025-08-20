@@ -20,6 +20,34 @@ TGS Frontendは、愛知工業大学の学生がUnityを用いて開発したゲ
 - ユーザーインターフェース（メニュー、HUD、ポップアップ等）
 - 入力受付・イベントハンドリング
 
+## ファイル構成と役割 (Assets)
+`Assets`フォルダ内にはシーン単位でフォルダに分けられており、フォルダ内には各シーンで利用されるファイル群が配置されています。
+```
+Assets/
+├── Bitgem/       # StylisedWaterアセット
+├── Sardine/      # ゲームに登場する「イワシ」関連のアセット
+├── Scenes/       # ゲームのシーンファイル
+│   ├── Common/   # シーンを跨いで利用される、共通のスクリプトを格納するフォルダ
+│   │   └── PointMemory.cs      # シーン間でポイント情報を永続化
+│   ├── WelcomeScene/
+│   │   ├── WelcomeScene.unity    # ゲームのタイトル画面（スタート画面）
+│   │   ├── ButtonHandler.cs      # UIボタンのイベントを処理
+│   │   ├── SerialHandler.cs      # シリアル通信の管理
+│   │   └── SerialReceive.cs      # シリアルデータを受信
+│   ├── MainScene/  
+│   │   ├── MainGameScene.unity   # メインのゲームシーンファイル
+│   │   ├── MainGameSystem.cs     # ゲームのメインシステム。当たり判定、スコア計算やシャチの突き動作などが実装されている。
+│   │   ├── PhysicalControl.cs    # 元々ひれの動きを実装していたもの。現在は使用されていない。
+│   │   ├── Boid.cs               # BoidControllerでの設定に基づいて、魚の動きを実際に制御する。
+│   │   ├── BoidController.cs     # 生成する魚の数とその動き方を設定・制御する。
+│   │   └── move.cs               # オブジェクトの移動処理（現在は仮でWASD移動を実装済み）
+│   └── FinishScene/
+│       ├── FinishScene.unity     # ゲーム終了後のリザルト画面
+│       └── Script.cs             # リザルト画面のスクリプト
+├── Settings/     # レンダリングパイプラインなどの設定アセット
+└── TextMesh Pro/ # TextMesh Proアセット (サンプルスクリプトは省略)
+```
+
 ## リポジトリ運用方針
 
 ### `main`ブランチ
