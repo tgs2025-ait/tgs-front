@@ -53,12 +53,16 @@ public class MainGameSystem : MonoBehaviour
 
         // リターンキーを押している間だけローカル座標を基準からz軸方向に10だけ動かす
         // リターンキーを押している間、滑らかにz軸方向に5だけ移動し、離したら元の位置に滑らかに戻る
+        Animator animator = GetComponent<Animator>();
         if (Input.GetKey(KeyCode.Return))
         {
+                        // アニメーションを一回再生する
+            if(!isPressed) animator.SetTrigger("trigger");
             isPressed = true;
         }
         else
         {
+
             isPressed = false;
         }
         float targetZ = isPressed ? 5f : 0f;
