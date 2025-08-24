@@ -30,12 +30,17 @@ public class BoidController : MonoBehaviour
 
     void Start()
     {
+        
         allBoids = new Boid[numBoids];
+        GameObject a = Instantiate(boidPrefab, transform.position, Quaternion.identity, transform);
+        a.name = "テストのボイドだよ";
+        Debug.Log("テストボイドの生成");
         for (int i = 0; i < numBoids; i++)
         {
             Vector3 randomPos = transform.position + Random.insideUnitSphere * spawnRadius;
             GameObject boidGO = Instantiate(boidPrefab, randomPos, Quaternion.identity, transform);
             boidGO.name = "Boid " + i;
+
             allBoids[i] = boidGO.GetComponent<Boid>();
             allBoids[i].Initialize(this);
         }
