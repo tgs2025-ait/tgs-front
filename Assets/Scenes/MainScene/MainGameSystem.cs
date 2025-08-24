@@ -48,8 +48,8 @@ public class MainGameSystem : MonoBehaviour
         {
             SceneManager.LoadScene("FinishScene");
         }
-
-        scoreText.text = "Score: " + PointMemory.point.ToString();
+        // スコアを表示
+        scoreText.text = PointMemory.point.ToString();
 
         // リターンキーを押している間だけローカル座標を基準からz軸方向に10だけ動かす
         // リターンキーを押している間、滑らかにz軸方向に5だけ移動し、離したら元の位置に滑らかに戻る
