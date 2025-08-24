@@ -392,6 +392,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8062882912964420466, guid: fc261228868bf4244a3c6aa1c321cfe0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1337005414}
+    - targetCorrespondingSourceObject: {fileID: 8062882912964420466, guid: fc261228868bf4244a3c6aa1c321cfe0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1337005418}
   m_SourcePrefab: {fileID: 100100000, guid: fc261228868bf4244a3c6aa1c321cfe0, type: 3}
 --- !u!1 &330585543
 GameObject:
@@ -1143,6 +1146,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1337005418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337005411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03e1d753cce9b45399470a9253402c9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  countdownTime: 60
+  timeText: {fileID: 841826683}
+  nextSceneName: FinishScene
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  warningColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1440952130
 GameObject:
   m_ObjectHideFlags: 0
@@ -1654,7 +1674,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7472238431362616241, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.0131583
+      value: 5.72
       objectReference: {fileID: 0}
     - target: {fileID: 7472238431362616241, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
       propertyPath: m_LocalPosition.z
