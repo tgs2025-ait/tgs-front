@@ -54,7 +54,14 @@ public class MainGameSystem : MonoBehaviour
         // リターンキーを押している間だけローカル座標を基準からz軸方向に10だけ動かす
         // リターンキーを押している間、滑らかにz軸方向に5だけ移動し、離したら元の位置に滑らかに戻る
         Animator animator = GetComponent<Animator>();
-        if (Input.GetKey(KeyCode.Return))
+        
+        // デバッグ用：加速度値を定期的に表示
+        if (Time.frameCount % 60 == 0) // 60フレームごとに表示
+        {
+            Debug.Log($"加速度値 - X: {SerialReceive.xAcceleration}, Y: {SerialReceive.yAcceleration}, Z: {SerialReceive.zAcceleration}");
+        }
+        
+        if (Input.GetKey(KeyCode.Return) || (SerialReceive.yAcceleration >= 1.7f /*&& 0.5f * (SerialReceive.xAcceleration + SerialReceive.zAcceleration) > SerialReceive.yAcceleration*/))//y軸加速度が1.7以上かつx軸とz軸の加速度の合計がy軸加速度の0.5倍より大きい
         {
                         // アニメーションを一回再生する
             if(!isPressed) animator.SetTrigger("trigger");
