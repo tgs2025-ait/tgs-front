@@ -61,7 +61,7 @@ public class MainGameSystem : MonoBehaviour
             Debug.Log($"加速度値 - X: {SerialReceive.xAcceleration}, Y: {SerialReceive.yAcceleration}, Z: {SerialReceive.zAcceleration}");
         }
         
-        if (Input.GetKey(KeyCode.Return) || (SerialReceive.yAcceleration >= 1.7f /*&& 0.5f * (SerialReceive.xAcceleration + SerialReceive.zAcceleration) > SerialReceive.yAcceleration*/))//y軸加速度が1.7以上かつx軸とz軸の加速度の合計がy軸加速度の0.5倍より大きい
+        if (Input.GetKey(KeyCode.Return) || (SerialReceive.yAcceleration >= 1.0f /*&& 0.5f * (SerialReceive.xAcceleration + SerialReceive.zAcceleration) > SerialReceive.yAcceleration*/))//y軸加速度が1.7以上かつx軸とz軸の加速度の合計がy軸加速度の0.5倍より大きい
         {
                         // アニメーションを一回再生する
             if(!isPressed) animator.SetTrigger("trigger");
