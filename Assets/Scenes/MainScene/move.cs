@@ -38,10 +38,6 @@ public class Move : MonoBehaviour
         float upDown = 0f;
         if(Input.GetKeyDown(KeyCode.L) && !isThrowing) ThrowOblique();
         HandleThrow();
-        if(Input.GetKeyDown(KeyCode.K) && orca != null)
-        {
-            orca.transform.localRotation = Quaternion.Euler(0, 90, 0) * orca.transform.localRotation;
-        }
         if (Input.GetKey(KeyCode.W)) vertical += 1f;
         if (Input.GetKey(KeyCode.S)) vertical -= 1f;
         if (Input.GetKey(KeyCode.A) || SerialReceive.pitchAngle <= -60) horizontal -= 1f;
@@ -95,7 +91,6 @@ public class Move : MonoBehaviour
         {
             throwVelocity += Vector3.up * gravity * Time.deltaTime;
             Vector3 pos = throwStartPosition;
-            float time = 0f;
 
             // y座標のみを更新
             float deltaY = throwVelocity.y * Time.deltaTime;
@@ -147,6 +142,8 @@ public class Move : MonoBehaviour
             if (animator != null)
             {
                 animator.enabled = true;
+                animator.Rebind();
+                animator.Update(0f);
             }
         }
     }
