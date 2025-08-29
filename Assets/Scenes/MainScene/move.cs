@@ -36,7 +36,7 @@ public class Move : MonoBehaviour
         float horizontal = 0f;
         float vertical = 0f;
         float upDown = 0f;
-        if(Input.GetKeyDown(KeyCode.L) && !isThrowing) ThrowOblique();
+        if((Input.GetKeyDown(KeyCode.L) && !isThrowing)|| (SerialReceive.ayAcceleration >= 1.5f && !isThrowing)) ThrowOblique();
         HandleThrow();
         if (Input.GetKey(KeyCode.W)) vertical += 1f;
         if (Input.GetKey(KeyCode.S)) vertical -= 1f;
