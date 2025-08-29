@@ -18,11 +18,11 @@ public class Move : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W)) vertical += 1f;
         if (Input.GetKey(KeyCode.S)) vertical -= 1f;
-        if (Input.GetKey(KeyCode.A)) horizontal -= 1f;
-        if (Input.GetKey(KeyCode.D)) horizontal += 1f;
+        if (Input.GetKey(KeyCode.A) || SerialReceive.pitchAngle <= -60) horizontal -= 1f;
+        if (Input.GetKey(KeyCode.D) || SerialReceive.pitchAngle >= 60) horizontal += 1f;
 
-        if (Input.GetKey(KeyCode.UpArrow)) upDown += 1f;
-        if (Input.GetKey(KeyCode.DownArrow)) upDown -= 1f;
+        if (Input.GetKey(KeyCode.UpArrow) || SerialReceive.rollAngle >= 35) upDown += 1f;
+        if (Input.GetKey(KeyCode.DownArrow) || SerialReceive.rollAngle <= -35) upDown -= 1f;
 
         Vector3 direction = new Vector3(horizontal, upDown, vertical).normalized;
         transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
