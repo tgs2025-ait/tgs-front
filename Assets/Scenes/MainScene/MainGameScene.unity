@@ -335,6 +335,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1199505632}
     m_Modifications:
+    - target: {fileID: 6728069184010230408, guid: fc261228868bf4244a3c6aa1c321cfe0, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7254962440931113416, guid: fc261228868bf4244a3c6aa1c321cfe0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.61
@@ -6230,7 +6234,7 @@ Transform:
   m_GameObject: {fileID: 1199505631}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.810838, y: 13.79, z: -14.722139}
+  m_LocalPosition: {x: -6.810838, y: -10.3, z: -14.722139}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6251,6 +6255,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b3a17d912cc44b28adb1e24fc9e19d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  throwPower: 40
+  throwAngle: 45
+  orca: {fileID: 1337005411}
 --- !u!1 &1337005411 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8062882912964420466, guid: fc261228868bf4244a3c6aa1c321cfe0, type: 3}

@@ -120,7 +120,7 @@ public class MainGameSystem : MonoBehaviour
             // explositionオブジェクトをtoremoveの位置に生成
             Instantiate(explosion, toRemove.transform.position, Quaternion.identity);
             Debug.Log("消去:" + toRemove.name);
-            PointMemory.point += 1200;
+            PointMemory.point += 1;
             Destroy(toRemove);
         }
 
