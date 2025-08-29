@@ -50,52 +50,26 @@ public class BluetoothConnectionIndicator : MonoBehaviour
         while (true)
         {
             bool exists = false;
-            bool portListed = false;
             try
             {
-                // 1) 直接パスを確認
                 if (!string.IsNullOrEmpty(devicePath))
                 {
                     exists = File.Exists(devicePath);
                 }
-
-                // 2) cu/tty の両方でファイル名ベースに確認
-                string devDir = "/dev";
-                string baseName = string.IsNullOrEmpty(devicePath) ? string.Empty : Path.GetFileName(devicePath);
-                if (!string.IsNullOrEmpty(baseName))
+                if (enableDebugLog)
                 {
-                    string cuCandidate = Path.Combine(devDir, baseName.Replace("tty.", "cu.").Replace("/dev/", string.Empty));
-                    string ttyCandidate = Path.Combine(devDir, baseName.Replace("cu.", "tty.").Replace("/dev/", string.Empty));
-                    exists = exists || File.Exists(cuCandidate) || File.Exists(ttyCandidate);
-                }
-
-                // 3) シリアルポート一覧からも確認
-                string[] ports = SerialPort.GetPortNames();
-                if (ports != null && ports.Length > 0)
-                {
-                    // 期待デバイス名に近いものを探す
-                    portListed = ports.Any(p => p.EndsWith("orca-m5stick-c-plus-dev") || p.Contains("orca-m5stick"));
-
-                    if (!portListed && !string.IsNullOrEmpty(devicePath))
-                    {
-                        portListed = ports.Any(p => p == devicePath || p.EndsWith(Path.GetFileName(devicePath)));
-                    }
-
-                    if (enableDebugLog)
-                    {
-                        Debug.Log($"BluetoothConnectionIndicator: 検出ポート: {string.Join(", ", ports)} / exists={exists} portListed={portListed}");
-                    }
+                    Debug.Log($"BluetoothConnectionIndicator: exists={exists} at '{devicePath}'");
                 }
             }
             catch (System.Exception ex)
             {
                 if (enableDebugLog)
                 {
-                    Debug.LogWarning($"BluetoothConnectionIndicator: 検出中に例外: {ex.Message}");
+                    Debug.LogWarning($"BluetoothConnectionIndicator: 例外: {ex.Message}");
                 }
             }
 
-            isConnected = exists || portListed;
+            isConnected = exists;
             yield return wait;
         }
     }
