@@ -42,15 +42,21 @@ public class SerialHandler : MonoBehaviour
 
     private void Open()
     {
-        serialPort_ = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);
-         //または
-         //serialPort_ = new SerialPort(portName, baudRate);
-        serialPort_.Open();
+        try {
+            serialPort_ = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);
+            //または
+            //serialPort_ = new SerialPort(portName, baudRate);
+            serialPort_.Open();
 
-        isRunning_ = true;
+            isRunning_ = true;
 
-        thread_ = new Thread(Read);
-        thread_.Start();
+            thread_ = new Thread(Read);
+            thread_.Start();
+        } catch (System.Exception e) {
+            Debug.LogWarning("SerialHandler: ポートを開けませんでした: " + e.Message);
+            isRunning_ = false;
+            serialPort_ = null;
+        }
     }
 
     private void Close()
