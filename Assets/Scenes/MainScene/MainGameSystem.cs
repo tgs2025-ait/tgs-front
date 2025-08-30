@@ -9,21 +9,24 @@ public class MainGameSystem : MonoBehaviour
     public TMP_Text scoreText;
     public GameObject boidController;
     public GameObject explosion;
-    private bool isPressed = false;
+    private bool isAttacking = false;
     private Vector3 originalPosition;
+    private Vector3 parentOriginalPosition;
+
 
     // BoidControllerの移動速度（Unityインスペクターから指定可能）
     [Header("BoidControllerの移動速度（z軸負方向）")]
-    public float boidControllerMoveSpeed = 10f;
+    public float boidControllerMoveSpeed;
 
     // 生成されたBoidControllerのリスト
     private List<GameObject> spawnedBoidControllers = new List<GameObject>();
 
+
     void Start()
     {
         PointMemory.point = 0;
-        originalPosition = transform.localPosition;
-
+        originalPosition = transform.position;
+        parentOriginalPosition = transform.parent.position;
         // コルーチンでBoidControllerの自動スポーンを開始
         StartCoroutine(SpawnBoidControllerCoroutine());
     }
@@ -53,7 +56,7 @@ public class MainGameSystem : MonoBehaviour
 
         // リターンキーを押している間だけローカル座標を基準からz軸方向に10だけ動かす
         // リターンキーを押している間、滑らかにz軸方向に5だけ移動し、離したら元の位置に滑らかに戻る
-        Animator animator = GetComponent<Animator>();
+
         
         // デバッグ用：加速度値と姿勢角度を定期的に表示
         if (Time.frameCount % 60 == 0) // 60フレームごとに表示
@@ -64,18 +67,19 @@ public class MainGameSystem : MonoBehaviour
         if (Input.GetKey(KeyCode.Return))
         {
                         // アニメーションを一回再生する
-            if(!isPressed) animator.SetTrigger("trigger");
-            isPressed = true;
+            Animator animator = GetComponent<Animator>();
+            if(!isAttacking) {
+                animator.SetTrigger("trigger");
+                Attack();
+            };
+                    
+            isAttacking = true;
         }
         else
         {
 
-            isPressed = false;
+            isAttacking = false;
         }
-        float targetZ = isPressed ? 5f : 0f;
-        Vector3 targetPosition = originalPosition + new Vector3(0, 0, targetZ);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, Time.deltaTime * 8f);
-
         // BoidControllerの移動と破棄処理
         for (int i = spawnedBoidControllers.Count - 1; i >= 0; i--)
         {
@@ -96,6 +100,16 @@ public class MainGameSystem : MonoBehaviour
             }
         }
     }
+    void Attack(){
+        
+        float targetZ = 5f;
+        Vector3 targetPosition = originalPosition + new Vector3(0, 0, targetZ);
+        Vector3 parentTargetPosition = parentOriginalPosition + new Vector3(0, 0, targetZ);
+        transform.parent.position = Vector3.Lerp(transform.parent.position, parentTargetPosition, Time.deltaTime * 8f);
+        transform.position = Vector3.Lerp(transform.position, targetPosition - new Vector3(0, 0, transform.parent.position.z), Time.deltaTime * 2f);
+
+        
+    }
 
     IEnumerator SpawnBoidControllerCoroutine()
     {
@@ -113,8 +127,8 @@ public class MainGameSystem : MonoBehaviour
     void OnTriggerEnter(Collider collision)
     {
         // 衝突したオブジェクトの名前を表示
-        //Debug.Log("衝突しました！対象: " + collision.gameObject.name);
-        if (collision.gameObject.name == "Bone" && isPressed)
+        Debug.Log("衝突しました！対象: " + collision.gameObject.name);
+        if (collision.gameObject.name == "Bone" && isAttacking)
         {
             GameObject toRemove = collision.gameObject.transform.parent.parent.gameObject;
             // explositionオブジェクトをtoremoveの位置に生成
