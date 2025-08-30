@@ -40,11 +40,23 @@ public class Move : MonoBehaviour
         HandleThrow();
         if (Input.GetKey(KeyCode.W)) vertical += 1f;
         if (Input.GetKey(KeyCode.S)) vertical -= 1f;
-        if (Input.GetKey(KeyCode.A) || SerialReceive.pitchAngle <= -60) horizontal -= 1f;
-        if (Input.GetKey(KeyCode.D) || SerialReceive.pitchAngle >= 60) horizontal += 1f;
+        if (Input.GetKey(KeyCode.A) || SerialReceive.pitchAngle <= -60){
+            horizontal -= 1f;
+            orca.transform.localRotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
+        }
+        if (Input.GetKey(KeyCode.D) || SerialReceive.pitchAngle >= 60) {
+            horizontal += 1f;
+            orca.transform.localRotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
+        }
 
-        if (Input.GetKey(KeyCode.UpArrow) || SerialReceive.rollAngle >= 35) upDown += 1f;
-        if (Input.GetKey(KeyCode.DownArrow) || SerialReceive.rollAngle <= -35) upDown -= 1f;
+        if (Input.GetKey(KeyCode.UpArrow) || SerialReceive.rollAngle >= 35) {
+            upDown += 1f;
+            orca.transform.localRotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
+        }
+        if (Input.GetKey(KeyCode.DownArrow) || SerialReceive.rollAngle <= -35) {
+            upDown -= 1f;
+            orca.transform.localRotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
+        }
 
         Vector3 direction = new Vector3(horizontal, upDown, vertical).normalized;
         // 斜方投射中は通常移動を無効化
