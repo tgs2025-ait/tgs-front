@@ -6287,7 +6287,7 @@ MonoBehaviour:
   scoreText: {fileID: 1846369876}
   boidController: {fileID: 1913832527}
   explosion: {fileID: 7022268795503775816, guid: 7377f38a94f13bd43924090d4a77f29e, type: 3}
-  boidControllerMoveSpeed: 5
+  boidControllerMoveSpeed: 3
   attackDelay: 1
 --- !u!65 &1337005415
 BoxCollider:
@@ -6790,8 +6790,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 10, y: 10, z: 6.347288}
+  m_Center: {x: 0, y: 0, z: 1.8263559}
 --- !u!1001 &2044756131
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6882,15 +6882,15 @@ PrefabInstance:
       objectReference: {fileID: 1812389206}
     - target: {fileID: 7472238431362616241, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.4
+      value: -1.23
       objectReference: {fileID: 0}
     - target: {fileID: 7472238431362616241, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.72
+      value: -13.05
       objectReference: {fileID: 0}
     - target: {fileID: 7472238431362616241, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.7
+      value: 7.46
       objectReference: {fileID: 0}
     - target: {fileID: 7472238431362616241, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6923,6 +6923,10 @@ PrefabInstance:
     - target: {fileID: 8062934443524039067, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
       propertyPath: m_Name
       value: BoidController
+      objectReference: {fileID: 0}
+    - target: {fileID: 8062934443524039067, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

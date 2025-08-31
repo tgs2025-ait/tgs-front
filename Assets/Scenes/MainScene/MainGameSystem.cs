@@ -37,6 +37,7 @@ public class MainGameSystem : MonoBehaviour
 
     void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
@@ -45,7 +46,7 @@ public class MainGameSystem : MonoBehaviour
         // 手動スポーン（デバッグ用、必要なら残す）
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, transform.position.z + 30f);
+            Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z + 30f);
             GameObject obj = Instantiate(boidController, spawnPos, transform.rotation);
             spawnedBoidControllers.Add(obj);
             activeBoidControllers.Add(obj);
@@ -75,7 +76,22 @@ public class MainGameSystem : MonoBehaviour
         //     isAttacking = true;
         //     StartCoroutine(UpdateAttackingStateCoroutine());
         // };   
-
+    
+        // ↓activeBoidControllers内で自オブジェクトに座標が近いものがあればデバッグ出力
+        // foreach (GameObject obj in activeBoidControllers)
+        // {
+        //     if (obj == null) continue;
+        //     Vector3 objPos = obj.transform.position;
+        //     Vector3 myPos = transform.position;
+        //     if (Mathf.Abs(objPos.x - myPos.x) <= 10f &&
+        //         Mathf.Abs(objPos.y - myPos.y) <= 10f &&
+        //         objPos.z - myPos.z <= -1f && objPos.z - myPos.z >= -3f)
+        //     {
+        //         Debug.Log("あああ" + (objPos.z - myPos.z)) ;
+                
+        //         break; // 1つでも見つかれば十分ならbreak
+        //     }
+        // }
 
 
 
@@ -118,13 +134,15 @@ public class MainGameSystem : MonoBehaviour
     //BoidControllerを自動で生成する
     IEnumerator SpawnBoidControllerCoroutine()
     {
+        // Debug.Log("spawnPos: " + transform.position);
         while (true)
         {
             float waitTime = Random.Range(1f, 5f);
             yield return new WaitForSeconds(waitTime);
 
-            Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, transform.position.z + 30f);
+            Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z + 30f);
             GameObject obj = Instantiate(boidController, spawnPos, transform.rotation);
+            obj.SetActive(true);
             spawnedBoidControllers.Add(obj);
             activeBoidControllers.Add(obj);
         }
@@ -143,8 +161,12 @@ public class MainGameSystem : MonoBehaviour
 
 
         // 群全体を攻撃対象から除外
-        if(collision.gameObject.name == "BoidController(Clone)" && isAttacking){
-
+        if(collision.gameObject.name == "BoidController(Clone)"){
+            if(!isAttacking){
+            Attack();  
+            StartCoroutine(UpdateAttackingStateCoroutine());
+            isAttacking = true;
+            }
             activeBoidControllers.Remove(collision.gameObject);
             Debug.Log("攻撃対象から除外:" + collision.gameObject.name);
             //衝突判定用のColliderを無効化
