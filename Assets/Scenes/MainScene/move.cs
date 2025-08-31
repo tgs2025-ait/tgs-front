@@ -89,6 +89,7 @@ public class Move : MonoBehaviour
         basePosition = transform.position;
         throwStartPosition = transform.position;
 
+        orca.GetComponent<MainGameSystem>().setBreathing(1f);
         // 進行方向（前方）を基準に斜方投射
         // 水平成分（XZ平面）をtransform.forwardで取得
         Vector3 forwardXZ = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;

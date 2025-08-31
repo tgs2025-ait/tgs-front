@@ -3,22 +3,33 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class MainGameSystem : MonoBehaviour
 {
     public TMP_Text scoreText;
+    [Header("ゲームの指示やメッセージを表示するテキスト")]
+    public TMP_Text instructionText;
+    [Header("BoidControllerのPrefab")]
     public GameObject boidController;
+
+    [Header("爆発のアニメーションPrefab")]
     public GameObject explosion;
     private bool isAttacking = false;
     private Vector3 originalPosition;
     private Vector3 parentOriginalPosition;
 
-
+    [Header("息継ぎメーターUIをここにセットしてください")]
+    public Slider breathingMeterSlider;
     // BoidControllerの移動速度（Unityインスペクターから指定可能）
     [Header("BoidControllerの移動速度（z軸負方向）")]
     public float boidControllerMoveSpeed;
     [Header("攻撃にかかる時間(攻撃しているとゲームが判断している時間です)")]
     public float attackDelay;
+
+    //残っている息の量
+    [HideInInspector]
+    public float breathing = 1f;
     // 生成されたBoidControllerのリスト
     private List<GameObject> spawnedBoidControllers = new List<GameObject>();
     //自動攻撃対象のBoidControllerのリスト
@@ -34,6 +45,8 @@ public class MainGameSystem : MonoBehaviour
         parentOriginalPosition = transform.parent.position;
         // コルーチンでBoidControllerの自動スポーンを開始
         StartCoroutine(SpawnBoidControllerCoroutine());
+        // 5秒ごとにbreathingを0.1-0.3減らすコルーチンを開始
+        StartCoroutine(BreathingDecreaseCoroutine());
     }
 
     void Update()
@@ -77,23 +90,16 @@ public class MainGameSystem : MonoBehaviour
         //     isAttacking = true;
         //     StartCoroutine(UpdateAttackingStateCoroutine());
         // };   
-    
-        // ↓activeBoidControllers内で自オブジェクトに座標が近いものがあればデバッグ出力
-        // foreach (GameObject obj in activeBoidControllers)
-        // {
-        //     if (obj == null) continue;
-        //     Vector3 objPos = obj.transform.position;
-        //     Vector3 myPos = transform.position;
-        //     if (Mathf.Abs(objPos.x - myPos.x) <= 10f &&
-        //         Mathf.Abs(objPos.y - myPos.y) <= 10f &&
-        //         objPos.z - myPos.z <= -1f && objPos.z - myPos.z >= -3f)
-        //     {
-        //         Debug.Log("あああ" + (objPos.z - myPos.z)) ;
-                
-        //         break; // 1つでも見つかれば十分ならbreak
-        //     }
-        // }
-
+        if(breathing <= 0.3f){
+            instructionText.text =  Mathf.Floor(breathing * 100f) + "% breath left. Breathe!";
+        }else{
+            instructionText.text = "";
+        }
+        if(breathing < 0.1f){
+            Debug.Log(GetComponent<CountdownTimer>().countdownTime);
+            setBreathing(1f);
+            GetComponent<CountdownTimer>().countdownTime /= 2f;
+        }
 
 
         // BoidControllerの移動と破棄処理
@@ -119,6 +125,40 @@ public class MainGameSystem : MonoBehaviour
         }
     }
 
+    // 5秒ごとにbreathingを0.1-0.3の間でランダムに減らすコルーチン
+    // 指定した量だけ呼吸量を減らしてメーターに反映する処理
+    private void DecreaseBreathing(float decrease)
+    {
+        breathing -= decrease;
+        breathing = Mathf.Clamp01(breathing); // 0未満にならないように
+        if (breathingMeterSlider != null)
+        {
+            breathingMeterSlider.value = breathing;
+        }
+        Debug.Log($"breathingが{decrease:F2}減少。現在値: {breathing:F2}");
+    }
+    public void setBreathing(float breathing){
+        this.breathing = breathing;
+        if (breathingMeterSlider != null)
+        {
+            breathingMeterSlider.value = breathing;
+        }
+        Debug.Log($"breathingを{breathing:F2}に設定。現在値: {breathing:F2}");
+    }
+
+    // 5秒ごとに呼吸量を減らすコルーチン
+    private IEnumerator BreathingDecreaseCoroutine()
+    {
+        yield return new WaitForSeconds(5f); // ゲーム開始後5秒待つ
+        while (true)
+        {
+            if(moveGroup.GetComponent<Move>().isThrowing) continue;
+            float decrease = Random.Range(0.1f, 0.3f);
+            DecreaseBreathing(decrease);
+            yield return new WaitForSeconds(5f);
+        }
+    }
+
     // 本来は毎フレーム呼び出すべきですが、不具合があるため一度だけ呼び出します(Update関数参照)
     void Attack(){
         // アニメーションを一回再生する
@@ -129,6 +169,8 @@ public class MainGameSystem : MonoBehaviour
         Vector3 parentTargetPosition = parentOriginalPosition + new Vector3(0, 0, targetZ);
         transform.parent.position = Vector3.Lerp(transform.parent.position, parentTargetPosition, Time.deltaTime * 8f);
         transform.position = Vector3.Lerp(transform.position, targetPosition - new Vector3(0, 0, transform.parent.position.z), Time.deltaTime * 2f);
+
+        DecreaseBreathing(0.1f);
 
     }
 
@@ -159,7 +201,7 @@ public class MainGameSystem : MonoBehaviour
     void OnTriggerEnter(Collider collision)
     {
         // 衝突したオブジェクトの名前を表示
-        Debug.Log("衝突しました！対象: " + collision.gameObject.name);
+        // Debug.Log("衝突しました！対象: " + collision.gameObject.name);
 
 
         // 群全体を攻撃対象から除外

@@ -5,7 +5,7 @@ using System.Collections;
 
 public class CountdownTimer : MonoBehaviour
 {
-    [SerializeField] private float countdownTime = 60f; // カウントダウンの初期時間（秒）
+    public float countdownTime = 60f; // カウントダウンの初期時間（秒）
     [SerializeField] private TMP_Text timeText; // TextMeshProのテキストコンポーネント
     [SerializeField] private string nextSceneName = "NextScene"; // 遷移先のシーン名
     [SerializeField] private Color normalColor = Color.white; // 通常時の色
