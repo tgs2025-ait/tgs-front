@@ -3,7 +3,8 @@ using System.Collections;
 //移動を制御するスクリプト
 public class Move : MonoBehaviour
 {
-    private bool isThrowing = false;
+    [HideInInspector]
+    public bool isThrowing = false;
     private Vector3 throwVelocity = Vector3.zero;
     private float gravity = -20f; // 重力加速度
     [Header("息継ぎの時に水面から出る勢い(後で変更が必要かも)")]
@@ -17,6 +18,8 @@ public class Move : MonoBehaviour
     // 回転補間用
     private Quaternion targetRotation = Quaternion.identity;
     private float rotationLerpSpeed = 3f; // 補間速度
+    [Header("水面のY座標(移動時に水面から出ないようにします)")]
+    public float waterY = 0f;
 
     void Start()
     {
@@ -63,6 +66,10 @@ public class Move : MonoBehaviour
         if (!isThrowing)
         {
             transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
+            //水面から出そうになったら強制的に戻す
+            if(transform.position.y > waterY){
+                transform.position = new Vector3(transform.position.x, waterY, transform.position.z);
+            }
         }
 
         // 回転を線形補間でorcaのlocalRotationに適用

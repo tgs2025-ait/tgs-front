@@ -24,7 +24,8 @@ public class MainGameSystem : MonoBehaviour
     //自動攻撃対象のBoidControllerのリスト
     // nullのものは攻撃対象から除外されていることを示す
     private List<GameObject> activeBoidControllers = new List<GameObject>();
-
+    [Header("シャチオブジェクトの親オブジェクトであるMoveGroupをここにセットしてください")]
+    public GameObject moveGroup;
 
     void Start()
     {
@@ -134,17 +135,18 @@ public class MainGameSystem : MonoBehaviour
     //BoidControllerを自動で生成する
     IEnumerator SpawnBoidControllerCoroutine()
     {
-        // Debug.Log("spawnPos: " + transform.position);
+
         while (true)
         {
             float waitTime = Random.Range(1f, 5f);
             yield return new WaitForSeconds(waitTime);
-
-            Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z + 30f);
-            GameObject obj = Instantiate(boidController, spawnPos, transform.rotation);
-            obj.SetActive(true);
-            spawnedBoidControllers.Add(obj);
-            activeBoidControllers.Add(obj);
+            if(!moveGroup.GetComponent<Move>().isThrowing){//息継ぎしてない時にBoidControllerを生成
+                Vector3 spawnPos = new Vector3(moveGroup.transform.position.x, moveGroup.transform.position.y + 3f, moveGroup.transform.position.z + 30f);
+                GameObject obj = Instantiate(boidController, spawnPos, transform.rotation);
+                obj.SetActive(true);
+                spawnedBoidControllers.Add(obj);
+                activeBoidControllers.Add(obj);
+            }
         }
     }
 

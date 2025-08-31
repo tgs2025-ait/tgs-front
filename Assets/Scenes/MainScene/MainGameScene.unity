@@ -6259,9 +6259,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b3a17d912cc44b28adb1e24fc9e19d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isThrowing: 0
   throwPower: 40
   throwAngle: 45
   orca: {fileID: 1337005411}
+  waterY: 0
 --- !u!1 &1337005411 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8062882912964420466, guid: fc261228868bf4244a3c6aa1c321cfe0, type: 3}
@@ -6287,8 +6289,9 @@ MonoBehaviour:
   scoreText: {fileID: 1846369876}
   boidController: {fileID: 1913832527}
   explosion: {fileID: 7022268795503775816, guid: 7377f38a94f13bd43924090d4a77f29e, type: 3}
-  boidControllerMoveSpeed: 3
+  boidControllerMoveSpeed: 5
   attackDelay: 1
+  moveGroup: {fileID: 1199505631}
 --- !u!65 &1337005415
 BoxCollider:
   m_ObjectHideFlags: 0
