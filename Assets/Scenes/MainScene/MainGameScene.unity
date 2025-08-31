@@ -6288,6 +6288,7 @@ MonoBehaviour:
   boidController: {fileID: 1913832527}
   explosion: {fileID: 7022268795503775816, guid: 7377f38a94f13bd43924090d4a77f29e, type: 3}
   boidControllerMoveSpeed: 5
+  attackDelay: 1
 --- !u!65 &1337005415
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6789,7 +6790,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 10, y: 10, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2044756131
 PrefabInstance:
