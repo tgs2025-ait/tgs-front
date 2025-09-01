@@ -6467,6 +6467,7 @@ MonoBehaviour:
   breathingMeterSlider: {fileID: 2002018769}
   boidControllerMoveSpeed: 5
   attackDelay: 1
+  decreaseBreathingTime: 5
   breathing: 1
   moveGroup: {fileID: 1199505631}
 --- !u!65 &1337005415
