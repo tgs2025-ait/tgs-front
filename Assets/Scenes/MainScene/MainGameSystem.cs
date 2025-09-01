@@ -26,6 +26,8 @@ public class MainGameSystem : MonoBehaviour
     public float boidControllerMoveSpeed;
     [Header("攻撃にかかる時間(攻撃しているとゲームが判断している時間です)")]
     public float attackDelay;
+    [Header("何秒ごとに息を減らすか")]
+    public float decreaseBreathingTime;
 
     //残っている息の量
     [HideInInspector]
@@ -149,13 +151,13 @@ public class MainGameSystem : MonoBehaviour
     // 5秒ごとに呼吸量を減らすコルーチン
     private IEnumerator BreathingDecreaseCoroutine()
     {
-        yield return new WaitForSeconds(5f); // ゲーム開始後5秒待つ
+        yield return new WaitForSeconds(decreaseBreathingTime); // ゲーム開始後5秒待つ
         while (true)
         {
-            if(moveGroup.GetComponent<Move>().isThrowing) continue;
+            if(moveGroup.GetComponent<Move>().isThrowing) yield return new WaitForSeconds(decreaseBreathingTime);
             float decrease = Random.Range(0.1f, 0.3f);
             DecreaseBreathing(decrease);
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(decreaseBreathingTime);
         }
     }
 
