@@ -39,27 +39,27 @@ public class Move : MonoBehaviour
         float horizontal = 0f;
         float vertical = 0f;
         float upDown = 0f;
-        if((Input.GetKeyDown(KeyCode.L) && !isThrowing)|| (SerialReceive.ayAcceleration >= 1.5f && !isThrowing)) ThrowOblique();
+        if((Input.GetKeyDown(KeyCode.L) && !isThrowing)|| (SerialReceive.ayAcceleration >= SensorThresholds.AyAccelerationForBreath && !isThrowing)) ThrowOblique();
         HandleThrow();
         Quaternion rotation = Quaternion.Euler(0, 0, 0);
         if (Input.GetKey(KeyCode.W)) vertical += 1f;
         if (Input.GetKey(KeyCode.S)) vertical -= 1f;
-        if (Input.GetKey(KeyCode.A) || SerialReceive.pitchAngle <= -60){
+        if (Input.GetKey(KeyCode.A) || SerialReceive.pitchAngle <= SensorThresholds.PitchLeftThreshold){
             horizontal -= 1f;
             rotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
         }
-        if (Input.GetKey(KeyCode.D) || SerialReceive.pitchAngle >= 60) {
+        if (Input.GetKey(KeyCode.D) || SerialReceive.pitchAngle >= SensorThresholds.PitchRightThreshold) {
             horizontal += 1f;
             rotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
 
         }
 
-        if (Input.GetKey(KeyCode.UpArrow) || SerialReceive.rollAngle >= 35) {
+        if (Input.GetKey(KeyCode.UpArrow) || SerialReceive.rollAngle >= SensorThresholds.RollUpThreshold) {
             upDown += 1f;
             rotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
 
         }
-        if (Input.GetKey(KeyCode.DownArrow) || SerialReceive.rollAngle <= -35) {
+        if (Input.GetKey(KeyCode.DownArrow) || SerialReceive.rollAngle <= SensorThresholds.RollDownThreshold) {
             upDown -= 1f;
             rotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
         }
