@@ -80,7 +80,7 @@ public class Move : MonoBehaviour
     }
 
     // 息継ぎ用関数(斜方投射ジャンプ)
-    void ThrowOblique()
+    public void ThrowOblique()
     {
         isThrowing = true;
         //これやらないとシャチが回転してくれません

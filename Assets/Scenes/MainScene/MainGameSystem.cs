@@ -97,10 +97,12 @@ public class MainGameSystem : MonoBehaviour
         }else{
             instructionText.text = "";
         }
+        // 息が切れたときの処理
         if(breathing < 0.1f){
             Debug.Log(GetComponent<CountdownTimer>().countdownTime);
             setBreathing(1f);
-            GetComponent<CountdownTimer>().countdownTime /= 2f;
+            // GetComponent<CountdownTimer>().countdownTime /= 2f;
+            moveGroup.GetComponent<Move>().ThrowOblique();
         }
 
 
