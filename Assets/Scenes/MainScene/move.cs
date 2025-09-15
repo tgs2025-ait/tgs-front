@@ -41,30 +41,34 @@ public class Move : MonoBehaviour
         float upDown = 0f;
         if((Input.GetKeyDown(KeyCode.L) && !isThrowing)|| (SerialReceive.ayAcceleration >= 1.5f && !isThrowing)) ThrowOblique();
         HandleThrow();
+        Quaternion rotation = Quaternion.Euler(0, 0, 0);
         if (Input.GetKey(KeyCode.W)) vertical += 1f;
         if (Input.GetKey(KeyCode.S)) vertical -= 1f;
         if (Input.GetKey(KeyCode.A) || SerialReceive.pitchAngle <= -60){
             horizontal -= 1f;
-            orca.transform.localRotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
+            rotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
         }
         if (Input.GetKey(KeyCode.D) || SerialReceive.pitchAngle >= 60) {
             horizontal += 1f;
-            orca.transform.localRotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
+            rotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
+
         }
 
         if (Input.GetKey(KeyCode.UpArrow) || SerialReceive.rollAngle >= 35) {
             upDown += 1f;
-            orca.transform.localRotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
+            rotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
+
         }
         if (Input.GetKey(KeyCode.DownArrow) || SerialReceive.rollAngle <= -35) {
             upDown -= 1f;
-            orca.transform.localRotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
+            rotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
         }
 
         Vector3 direction = new Vector3(horizontal, upDown, vertical).normalized;
         // 斜方投射中は通常移動を無効化
         if (!isThrowing)
         {
+            orca.transform.localRotation = rotation;
             transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
             //水面から出そうになったら強制的に戻す
             if(transform.position.y > waterY){
