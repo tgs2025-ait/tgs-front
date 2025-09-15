@@ -101,7 +101,7 @@ public class MainGameSystem : MonoBehaviour
         if(breathing < 0.1f){
             Debug.Log(GetComponent<CountdownTimer>().countdownTime);
             setBreathing(1f);
-            // GetComponent<CountdownTimer>().countdownTime /= 2f;
+            GetComponent<CountdownTimer>().countdownTime /= 2f;
             moveGroup.GetComponent<Move>().ThrowOblique();
         }
 
