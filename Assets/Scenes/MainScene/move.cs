@@ -71,8 +71,8 @@ public class Move : MonoBehaviour
             orca.transform.localRotation = rotation;
             transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
             //水面から出そうになったら強制的に戻す
-            if(transform.position.y > waterY){
-                transform.position = new Vector3(transform.position.x, waterY, transform.position.z);
+            if(transform.position.y > waterY - 3f){
+                transform.position = new Vector3(transform.position.x, waterY - 3f, transform.position.z);
             }
         }
 
