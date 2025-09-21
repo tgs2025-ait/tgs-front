@@ -7140,6 +7140,7 @@ MonoBehaviour:
   soundEffects:
   - {fileID: 8300000, guid: 96554b580d48b41ffa31bbf021d7c139, type: 3}
   - {fileID: 8300000, guid: 6978151ba1eda42f0a310dcfe3c5808e, type: 3}
+  - {fileID: 8300000, guid: a26b34973ac6f4aceb6f995c3d222dd5, type: 3}
   audioSource: {fileID: 0}
 --- !u!1 &1846369874
 GameObject:

@@ -42,6 +42,8 @@ public class UnderWater : MonoBehaviour
         if (other.gameObject.Equals(mainCamera.gameObject))
         {
             underWaterPlane.SetActive(false);
+            // 息継ぎの効果音を再生
+            SoundEffectManager.Instance.PlaySoundEffect(2);
 
             // 通常用スカイボックスに戻す
             if (normalSkybox != null)
