@@ -40,11 +40,21 @@ public class MainGameSystem : MonoBehaviour
     [Header("シャチオブジェクトの親オブジェクトであるMoveGroupをここにセットしてください")]
     public GameObject moveGroup;
 
+    private Renderer renderer;
+    private Color originalColor;
     void Start()
     {
         PointMemory.point = 0;
         originalPosition = transform.position;
         parentOriginalPosition = transform.parent.position;
+
+        // Rendererコンポーネントからマテリアル名を取得して表示
+        renderer = GetComponentInChildren<Renderer>();
+        if (renderer != null && renderer.material != null)
+        {
+            originalColor = renderer.material.color;
+        }
+        
         // コルーチンでBoidControllerの自動スポーンを開始
         StartCoroutine(SpawnBoidControllerCoroutine());
         // 5秒ごとにbreathingを0.1-0.3減らすコルーチンを開始
@@ -92,10 +102,16 @@ public class MainGameSystem : MonoBehaviour
         //     isAttacking = true;
         //     StartCoroutine(UpdateAttackingStateCoroutine());
         // };   
+
+
         if(breathing <= 0.3f){
+
             instructionText.text =  Mathf.Floor(breathing * 100f) + "% breath left. Breathe!";
+                renderer.material.color = new Color(1f, 0f, 0f, 0.5f);
         }else{
             instructionText.text = "";
+            renderer.material.color = originalColor;
+
         }
         // 息が切れたときの処理
         if(breathing < 0.1f){
