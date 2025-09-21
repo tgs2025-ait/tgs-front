@@ -21,6 +21,18 @@ public class Move : MonoBehaviour
     [Header("水面のY座標(移動時に水面から出ないようにします)")]
     public float waterY = 0f;
 
+    [Header("移動速度(基準)")]
+    [SerializeField] private float baseMoveSpeed = 5f;
+    [Header("しきい値ちょうどでの最小倍率(>0で\"動き出し\")")]
+    [Range(0f, 1f)] [SerializeField] private float minSpeedMultiplier = 0.25f;
+    [Header("センサー最大時の速度倍率(基準×この値)")]
+    [SerializeField] private float maxSpeedMultiplier = 2.0f;
+    [Header("ピッチ角|ロール角がこの絶対値で最大速に達する(度)")]
+    [SerializeField] private float pitchAbsForFullSpeed = 70f;
+    [SerializeField] private float rollAbsForFullSpeed = 70f;
+    [Header("速度カーブ(1=直線, 2=ゆっくり立ち上がり)")]
+    [SerializeField] private float speedCurveExponent = 1.0f;
+
     void Start()
     {
         if (orca != null)
@@ -35,41 +47,71 @@ public class Move : MonoBehaviour
 
     void Update()
     {
-        float moveSpeed = 5f;
-        float horizontal = 0f;
-        float vertical = 0f;
-        float upDown = 0f;
+        // 入力の符号(方向)と速度倍率を別々に扱う
+        float horizontalSign = 0f;
+        float vertical = 0f;     // 前後はキーボードのみ(現状)
+        float upDownSign = 0f;
+        float horizontalMul = 0f; // 0=停止, 1=基準速, >1=加速
+        float upDownMul = 0f;
         if((Input.GetKeyDown(KeyCode.L) && !isThrowing)|| (SerialReceive.ayAcceleration >= SensorThresholds.AyAccelerationForBreath && !isThrowing)) ThrowOblique();
         HandleThrow();
         Quaternion rotation = Quaternion.Euler(0, 0, 0);
         if (Input.GetKey(KeyCode.W)) vertical += 1f;
         if (Input.GetKey(KeyCode.S)) vertical -= 1f;
-        if (Input.GetKey(KeyCode.A) || SerialReceive.pitchAngle <= SensorThresholds.PitchLeftThreshold){
-            horizontal -= 1f;
+
+        // 左右: キー or センサーしきい値
+        bool leftByKey = Input.GetKey(KeyCode.A);
+        bool rightByKey = Input.GetKey(KeyCode.D);
+        bool leftBySensor = SerialReceive.pitchAngle <= SensorThresholds.PitchLeftThreshold;
+        bool rightBySensor = SerialReceive.pitchAngle >= SensorThresholds.PitchRightThreshold;
+
+        if (leftByKey || leftBySensor)
+        {
+            horizontalSign -= 1f;
+            float mul = leftByKey ? 1f : MapAngleToMultiplier(Mathf.Abs(SerialReceive.pitchAngle), Mathf.Abs(SensorThresholds.PitchLeftThreshold), pitchAbsForFullSpeed);
+            horizontalMul = Mathf.Max(horizontalMul, mul);
             rotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
         }
-        if (Input.GetKey(KeyCode.D) || SerialReceive.pitchAngle >= SensorThresholds.PitchRightThreshold) {
-            horizontal += 1f;
+        if (rightByKey || rightBySensor)
+        {
+            horizontalSign += 1f;
+            float mul = rightByKey ? 1f : MapAngleToMultiplier(SerialReceive.pitchAngle, SensorThresholds.PitchRightThreshold, pitchAbsForFullSpeed);
+            horizontalMul = Mathf.Max(horizontalMul, mul);
             rotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
-
         }
 
-        if (Input.GetKey(KeyCode.UpArrow) || SerialReceive.rollAngle >= SensorThresholds.RollUpThreshold) {
-            upDown += 1f;
+        // 上下: キー or センサーしきい値
+        bool upByKey = Input.GetKey(KeyCode.UpArrow);
+        bool downByKey = Input.GetKey(KeyCode.DownArrow);
+        bool upBySensor = SerialReceive.rollAngle >= SensorThresholds.RollUpThreshold;
+        bool downBySensor = SerialReceive.rollAngle <= SensorThresholds.RollDownThreshold;
+
+        if (upByKey || upBySensor)
+        {
+            upDownSign += 1f;
+            float mul = upByKey ? 1f : MapAngleToMultiplier(SerialReceive.rollAngle, SensorThresholds.RollUpThreshold, rollAbsForFullSpeed);
+            upDownMul = Mathf.Max(upDownMul, mul);
             rotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
-
         }
-        if (Input.GetKey(KeyCode.DownArrow) || SerialReceive.rollAngle <= SensorThresholds.RollDownThreshold) {
-            upDown -= 1f;
+        if (downByKey || downBySensor)
+        {
+            upDownSign -= 1f;
+            float mul = downByKey ? 1f : MapAngleToMultiplier(Mathf.Abs(SerialReceive.rollAngle), Mathf.Abs(SensorThresholds.RollDownThreshold), rollAbsForFullSpeed);
+            upDownMul = Mathf.Max(upDownMul, mul);
             rotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
         }
 
-        Vector3 direction = new Vector3(horizontal, upDown, vertical).normalized;
+        // 速度ベクトル（正規化しない: 倍率で速度を変化させる）
+        Vector3 velocity = new Vector3(
+            horizontalSign * baseMoveSpeed * horizontalMul,
+            upDownSign * baseMoveSpeed * upDownMul,
+            vertical * baseMoveSpeed
+        );
         // 斜方投射中は通常移動を無効化
         if (!isThrowing)
         {
             orca.transform.localRotation = rotation;
-            transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
+            transform.Translate(velocity * Time.deltaTime, Space.World);
             //水面から出そうになったら強制的に戻す
             if(transform.position.y > waterY - 3f){
                 transform.position = new Vector3(transform.position.x, waterY - 3f, transform.position.z);
@@ -81,6 +123,25 @@ public class Move : MonoBehaviour
         {
             orca.transform.localRotation = Quaternion.Lerp(orca.transform.localRotation, targetRotation, Time.deltaTime * rotationLerpSpeed);
         }
+    }
+
+    // 角度(しきい値以上)を速度倍率にマップ
+    // valueAbsOrSigned: 右上(正方向)は符号付き, 左下(負方向)は絶対値を渡す実装にしています
+    // startAt: 動き出しの角度(しきい値)
+    // fullAtAbs: この絶対角で最大倍率に到達
+    private float MapAngleToMultiplier(float valueAbsOrSigned, float startAt, float fullAtAbs)
+    {
+        // startAt と fullAtAbs は同符号 or 正値として扱う
+        float startAbs = Mathf.Abs(startAt);
+        float vAbs = Mathf.Abs(valueAbsOrSigned);
+        float fullAbs = Mathf.Abs(fullAtAbs);
+        // vAbs を [startAbs, fullAbs] にクランプして 0..1 に正規化
+        float vClamped = Mathf.Clamp(vAbs, startAbs, fullAbs);
+        float t = Mathf.InverseLerp(startAbs, fullAbs, vClamped);
+        // カーブ適用(1=直線)
+        t = Mathf.Pow(t, Mathf.Max(0.0001f, speedCurveExponent));
+        // 最小/最大倍率へ補間
+        return Mathf.Lerp(minSpeedMultiplier, maxSpeedMultiplier, t);
     }
 
     // 息継ぎ用関数(斜方投射ジャンプ)
