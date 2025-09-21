@@ -28,7 +28,7 @@ public class UnderWater : MonoBehaviour
         if (other.gameObject.Equals(mainCamera.gameObject))
         {
             underWaterPlane.SetActive(true);
-            
+            SoundEffectManager.Instance.PlaySoundEffect(1);
             // 水中用スカイボックスに切り替え
             if (underwaterSkybox != null)
             {
@@ -42,7 +42,7 @@ public class UnderWater : MonoBehaviour
         if (other.gameObject.Equals(mainCamera.gameObject))
         {
             underWaterPlane.SetActive(false);
-            
+
             // 通常用スカイボックスに戻す
             if (normalSkybox != null)
             {
