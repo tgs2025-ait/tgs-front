@@ -12,6 +12,10 @@ public class MainGameSystem : MonoBehaviour
     public TMP_Text instructionText;
     [Header("BoidControllerのPrefab")]
     public GameObject boidController;
+    [Header("BoidControllerのスポーンするタイミングの最低時間")]
+    public float minSpawnTime;
+    [Header("BoidControllerのスポーンするタイミングの最高時間")]
+    public float maxSpawnTime;
 
     [Header("爆発のアニメーションPrefab")]
     public GameObject explosion;
@@ -183,6 +187,7 @@ public class MainGameSystem : MonoBehaviour
     void Attack(){
         // アニメーションを一回再生する
         Animator animator = GetComponent<Animator>();
+        SoundEffectManager.Instance.PlaySoundEffect(0);
         animator.SetTrigger("trigger");
         float targetZ = 5f;
         Vector3 targetPosition = originalPosition + new Vector3(0, 0, targetZ);
@@ -200,7 +205,7 @@ public class MainGameSystem : MonoBehaviour
 
         while (true)
         {
-            float waitTime = Random.Range(1f, 5f);
+            float waitTime = Random.Range(minSpawnTime, maxSpawnTime);
             yield return new WaitForSeconds(waitTime);
             if(!moveGroup.GetComponent<Move>().isThrowing){//息継ぎしてない時にBoidControllerを生成
                 Vector3 spawnPos = new Vector3(moveGroup.transform.position.x, moveGroup.transform.position.y + 3f, moveGroup.transform.position.z + 30f);
