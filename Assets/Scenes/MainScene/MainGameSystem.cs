@@ -208,7 +208,11 @@ public class MainGameSystem : MonoBehaviour
             float waitTime = Random.Range(minSpawnTime, maxSpawnTime);
             yield return new WaitForSeconds(waitTime);
             if(!moveGroup.GetComponent<Move>().isThrowing){//息継ぎしてない時にBoidControllerを生成
-                Vector3 spawnPos = new Vector3(moveGroup.transform.position.x, moveGroup.transform.position.y + 3f, moveGroup.transform.position.z + 30f);
+            
+                float randomY = Random.Range(-30f, -2f);
+
+                // Vector3 spawnPos = new Vector3(moveGroup.transform.position.x, moveGroup.transform.position.y + 3f, moveGroup.transform.position.z + 30f);
+                Vector3 spawnPos = new Vector3(moveGroup.transform.position.x, randomY, moveGroup.transform.position.z + 30f);
                 GameObject obj = Instantiate(boidController, spawnPos, transform.rotation);
                 obj.SetActive(true);
                 spawnedBoidControllers.Add(obj);
