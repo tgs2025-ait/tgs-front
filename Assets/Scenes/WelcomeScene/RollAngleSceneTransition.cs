@@ -11,9 +11,10 @@ public class RollAngleSceneTransition : MonoBehaviour
     
     [Header("デバッグ設定")]
     [SerializeField] private bool enableDebugLog = true;
+    [SerializeField] private bool enableSpaceKeyDebugTransition = true;
     
     private bool hasTransitioned = false; // 既にシーン遷移したかどうかのフラグ
-    
+
     void Start()
     {
         if (enableDebugLog)
@@ -23,6 +24,25 @@ public class RollAngleSceneTransition : MonoBehaviour
         
         // 定期的にroll角度をチェックするコルーチンを開始
         StartCoroutine(CheckRollAngle());
+    }
+
+    void Update()
+    {
+        if (hasTransitioned || !enableSpaceKeyDebugTransition)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (enableDebugLog)
+            {
+                Debug.Log("RollAngleSceneTransition: スペースキー入力を検出しました。MainGameSceneに遷移します。");
+            }
+
+            hasTransitioned = true;
+            TransitionToMainGameScene();
+        }
     }
     
     /// <summary>
