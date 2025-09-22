@@ -6579,7 +6579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03e1d753cce9b45399470a9253402c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countdownTime: 60
+  countdownTime: 90
   timeText: {fileID: 841826683}
   nextSceneName: FinishScene
   normalColor: {r: 1, g: 1, b: 1, a: 1}
