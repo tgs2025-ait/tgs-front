@@ -7636,6 +7636,10 @@ PrefabInstance:
       propertyPath: boidPrefab
       value: 
       objectReference: {fileID: 1812389206}
+    - target: {fileID: 5126666312785522015, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
+      propertyPath: spawnRadius
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7472238431362616241, guid: 8c3c0dbf7da394e749131be9fa5cc73d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.23
