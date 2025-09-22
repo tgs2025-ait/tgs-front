@@ -11,8 +11,11 @@ public static class SensorThresholds
     public const float PitchRightThreshold = 35f;
 
     // 上下のロールでの昇降閾値（度）
-    public const float RollUpThreshold = 25f;
-    public const float RollDownThreshold = -25f;
-}
+    public const float RollUpThreshold = 30f;
+    public const float RollDownThreshold = -30f;
 
+    // 上下移動を許可するためのピッチ許容範囲（度）
+    public const float PitchMinForVerticalMove = -60f;
+    public const float PitchMaxForVerticalMove = 60f;
+}
 
