@@ -6485,6 +6485,8 @@ MonoBehaviour:
   pitchAbsForFullSpeed: 70
   rollAbsForFullSpeed: 70
   speedCurveExponent: 1
+  maxVisualTiltAngle: 75
+  maxVisualPitchAngle: 60
 --- !u!1 &1337005411 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8062882912964420466, guid: fc261228868bf4244a3c6aa1c321cfe0, type: 3}

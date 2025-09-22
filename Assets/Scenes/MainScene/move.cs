@@ -32,6 +32,9 @@ public class Move : MonoBehaviour
     [SerializeField] private float rollAbsForFullSpeed = 70f;
     [Header("速度カーブ(1=直線, 2=ゆっくり立ち上がり)")]
     [SerializeField] private float speedCurveExponent = 1.0f;
+    [Header("シャチの見た目の最大傾き(度)")]
+    [SerializeField] private float maxVisualTiltAngle = 75f; // Z軸(左右)の傾き制限
+    [SerializeField] private float maxVisualPitchAngle = 60f; // X軸(上下)の傾き制限
 
     void Start()
     {
@@ -64,41 +67,44 @@ public class Move : MonoBehaviour
         bool rightByKey = Input.GetKey(KeyCode.D);
         bool leftBySensor = SerialReceive.pitchAngle <= SensorThresholds.PitchLeftThreshold;
         bool rightBySensor = SerialReceive.pitchAngle >= SensorThresholds.PitchRightThreshold;
+        float clampedPitchForVisual = ClampSignedAngle(SerialReceive.pitchAngle, maxVisualTiltAngle);
 
         if (leftByKey || leftBySensor)
         {
             horizontalSign -= 1f;
             float mul = leftByKey ? 1f : MapAngleToMultiplier(Mathf.Abs(SerialReceive.pitchAngle), Mathf.Abs(SensorThresholds.PitchLeftThreshold), pitchAbsForFullSpeed);
             horizontalMul = Mathf.Max(horizontalMul, mul);
-            rotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
+            rotation = Quaternion.Euler(0, 0, -clampedPitchForVisual);
         }
         if (rightByKey || rightBySensor)
         {
             horizontalSign += 1f;
             float mul = rightByKey ? 1f : MapAngleToMultiplier(SerialReceive.pitchAngle, SensorThresholds.PitchRightThreshold, pitchAbsForFullSpeed);
             horizontalMul = Mathf.Max(horizontalMul, mul);
-            rotation = Quaternion.Euler(0, 0, -SerialReceive.pitchAngle);
+            rotation = Quaternion.Euler(0, 0, -clampedPitchForVisual);
         }
 
         // 上下: キー or センサーしきい値
         bool upByKey = Input.GetKey(KeyCode.UpArrow);
         bool downByKey = Input.GetKey(KeyCode.DownArrow);
-        bool upBySensor = SerialReceive.rollAngle >= SensorThresholds.RollUpThreshold;
-        bool downBySensor = SerialReceive.rollAngle <= SensorThresholds.RollDownThreshold;
+        bool pitchAllowsVertical = SerialReceive.pitchAngle > SensorThresholds.PitchMinForVerticalMove && SerialReceive.pitchAngle < SensorThresholds.PitchMaxForVerticalMove;
+        bool upBySensor = pitchAllowsVertical && SerialReceive.rollAngle >= SensorThresholds.RollUpThreshold;
+        bool downBySensor = pitchAllowsVertical && SerialReceive.rollAngle <= SensorThresholds.RollDownThreshold;
+        float clampedRollForVisual = ClampSignedAngle(SerialReceive.rollAngle, maxVisualPitchAngle);
 
-        if (upByKey || upBySensor)
+        if ((upByKey && pitchAllowsVertical) || upBySensor)
         {
             upDownSign += 1f;
             float mul = upByKey ? 1f : MapAngleToMultiplier(SerialReceive.rollAngle, SensorThresholds.RollUpThreshold, rollAbsForFullSpeed);
             upDownMul = Mathf.Max(upDownMul, mul);
-            rotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
+            rotation = Quaternion.Euler(-clampedRollForVisual, 0, 0);
         }
-        if (downByKey || downBySensor)
+        if ((downByKey && pitchAllowsVertical) || downBySensor)
         {
             upDownSign -= 1f;
             float mul = downByKey ? 1f : MapAngleToMultiplier(Mathf.Abs(SerialReceive.rollAngle), Mathf.Abs(SensorThresholds.RollDownThreshold), rollAbsForFullSpeed);
             upDownMul = Mathf.Max(upDownMul, mul);
-            rotation = Quaternion.Euler(-SerialReceive.rollAngle, 0, 0);
+            rotation = Quaternion.Euler(-clampedRollForVisual, 0, 0);
         }
 
         // 速度ベクトル（正規化しない: 倍率で速度を変化させる）
@@ -142,6 +148,13 @@ public class Move : MonoBehaviour
         t = Mathf.Pow(t, Mathf.Max(0.0001f, speedCurveExponent));
         // 最小/最大倍率へ補間
         return Mathf.Lerp(minSpeedMultiplier, maxSpeedMultiplier, t);
+    }
+
+    private float ClampSignedAngle(float angleDeg, float maxAbsDeg)
+    {
+        float normalized = Mathf.DeltaAngle(0f, angleDeg);
+        float limit = Mathf.Abs(maxAbsDeg);
+        return Mathf.Clamp(normalized, -limit, limit);
     }
 
     // 息継ぎ用関数(斜方投射ジャンプ)
