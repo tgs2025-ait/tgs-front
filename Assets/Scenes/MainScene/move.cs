@@ -7,7 +7,7 @@ public class Move : MonoBehaviour
     public bool isThrowing = false;
     private Vector3 throwVelocity = Vector3.zero;
     private float gravity = -20f; // 重力加速度
-    [Header("息継ぎの時に水面から出る勢い(後で変更が必要かも)")]
+    [Header("息継ぎの時に水面から出る勢い(これに現在の水深を反映させたウェイトと足されます)")]
     public float throwPower; // 投射初速度
     [Header("斜方投射の角度（度）")]
     public float throwAngle = 45f; // 斜方投射の角度
@@ -33,6 +33,8 @@ public class Move : MonoBehaviour
     [Header("速度カーブ(1=直線, 2=ゆっくり立ち上がり)")]
     [SerializeField] private float speedCurveExponent = 1.0f;
 
+    private Vector3 originalPosition;
+
     void Start()
     {
         if (orca != null)
@@ -43,6 +45,7 @@ public class Move : MonoBehaviour
         {
             targetRotation = Quaternion.identity;
         }
+        originalPosition = transform.position;
     }
 
     void Update()
@@ -154,6 +157,10 @@ public class Move : MonoBehaviour
         basePosition = transform.position;
         throwStartPosition = transform.position;
 
+
+
+        float throwPowerWeight = (basePosition.y - waterY)/(originalPosition.y - waterY);
+
         orca.GetComponent<MainGameSystem>().setBreathing(1f);
         // 進行方向（前方）を基準に斜方投射
         // 水平成分（XZ平面）をtransform.forwardで取得
@@ -162,7 +169,7 @@ public class Move : MonoBehaviour
 
         float rad = throwAngle * Mathf.Deg2Rad;
         // 速度ベクトルを分解
-        float v = throwPower;
+        float v = throwPower + throwPowerWeight;
         float vy = v * Mathf.Sin(rad);
         float vh = v * Mathf.Cos(rad);
 

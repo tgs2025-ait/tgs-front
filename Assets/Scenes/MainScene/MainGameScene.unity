@@ -6475,7 +6475,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isThrowing: 0
-  throwPower: 40
+  throwPower: 50
   throwAngle: 45
   orca: {fileID: 1337005411}
   waterY: 0
