@@ -7,11 +7,13 @@ public static class ScoreSessionData
     public static bool IsLastEntryStored => _lastEntryStored;
     public static long? LastEntryId => _lastEntryId;
     public static int LastScoreValue => _lastScoreValue;
+    public static string LastAchievedAtJst => _lastAchievedAtJst;
 
     private static bool _hasLastEntry;
     private static bool _lastEntryStored;
     private static long? _lastEntryId;
     private static int _lastScoreValue;
+    private static string _lastAchievedAtJst;
 
     public static void SetLastEntry(ScoreEntry entry, bool storedInDatabase)
     {
@@ -19,6 +21,7 @@ public static class ScoreSessionData
         _lastEntryStored = _hasLastEntry && storedInDatabase;
         _lastEntryId = _lastEntryStored ? entry.Id : null;
         _lastScoreValue = entry?.ScoreValue ?? 0;
+        _lastAchievedAtJst = entry?.AchievedAtJst;
     }
 
     public static void Clear()
@@ -27,5 +30,6 @@ public static class ScoreSessionData
         _lastEntryStored = false;
         _lastEntryId = null;
         _lastScoreValue = 0;
+        _lastAchievedAtJst = null;
     }
 }

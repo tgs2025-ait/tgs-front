@@ -71,16 +71,16 @@ public static class ScoreRepository
             try
             {
                 _connection.Insert(model);
+                var rank = CalculateRank(model.ScoreValue, model.AchievedAtJst);
                 TrimExcessEntries();
-                var storedModel = _connection.Find<ScoreModel>(model.Id);
 
+                var storedModel = _connection.Find<ScoreModel>(model.Id);
                 if (storedModel == null)
                 {
-                    // スコア上限により即時削除された場合
-                    return new ScoreEntry(model.Id, MaxEntries + 1, model.ScoreValue, model.AchievedAtJst, false);
+                    // スコア上限により即時削除された場合でも、算出済みの順位を返す
+                    return new ScoreEntry(model.Id, rank, model.ScoreValue, model.AchievedAtJst, false);
                 }
 
-                var rank = CalculateRank(storedModel.ScoreValue, storedModel.AchievedAtJst);
                 return new ScoreEntry(storedModel.Id, rank, storedModel.ScoreValue, storedModel.AchievedAtJst, false);
             }
             catch (Exception ex)
@@ -113,7 +113,7 @@ public static class ScoreRepository
         }
     }
 
-    public static ScoreEntry GetEntryById(long id)
+    public static ScoreEntry? GetEntryById(long id)
     {
         lock (SyncRoot)
         {
@@ -126,6 +126,15 @@ public static class ScoreRepository
 
             var rank = CalculateRank(model.ScoreValue, model.AchievedAtJst);
             return new ScoreEntry(model.Id, rank, model.ScoreValue, model.AchievedAtJst, false);
+        }
+    }
+
+    public static int GetRankEstimate(int scoreValue, string achievedAtJst)
+    {
+        lock (SyncRoot)
+        {
+            EnsureInitialized();
+            return CalculateRank(scoreValue, achievedAtJst);
         }
     }
 

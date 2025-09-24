@@ -152,9 +152,19 @@ public class MainGameSystem : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        SubmitScoreIfNeeded();
+    }
+
     private void SubmitScoreIfNeeded()
     {
         if (_scoreSubmitted)
+        {
+            return;
+        }
+
+        if (PointMemory.point <= 0)
         {
             return;
         }

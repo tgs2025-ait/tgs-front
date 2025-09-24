@@ -12,9 +12,6 @@ public class Script : MonoBehaviour
     [Header("ランキング一覧を表示するテキスト")]
     public TMP_Text rankingText;
 
-    [Header("自分の順位を表示するテキスト")]
-    public TMP_Text selfRankText;
-
     [Header("ランキングに表示する件数")]
     public int leaderboardDisplayCount = 10;
 
@@ -35,43 +32,53 @@ public class Script : MonoBehaviour
     {
         var hasLastEntry = ScoreSessionData.HasLastEntry;
         var currentScore = hasLastEntry ? ScoreSessionData.LastScoreValue : PointMemory.point;
-        if (scoreText != null)
-        {
-            scoreText.text = currentScore.ToString();
-        }
 
         try
         {
             var displayCount = Mathf.Max(1, leaderboardDisplayCount);
             var entries = ScoreRepository.GetTopScores(displayCount);
             var selfId = ScoreSessionData.IsLastEntryStored ? ScoreSessionData.LastEntryId : null;
+            ScoreEntry? selfEntry = null;
+            if (selfId.HasValue)
+            {
+                selfEntry = ScoreRepository.GetEntryById(selfId.Value);
+            }
+
+            int? calculatedRank = null;
+            if (selfEntry == null && hasLastEntry && !string.IsNullOrEmpty(ScoreSessionData.LastAchievedAtJst))
+            {
+                try
+                {
+                    calculatedRank = ScoreRepository.GetRankEstimate(currentScore, ScoreSessionData.LastAchievedAtJst);
+                }
+                catch (System.Exception rankEx)
+                {
+                    Debug.LogWarning($"順位の推定に失敗しました: {rankEx.Message}");
+                }
+            }
 
             if (rankingText != null)
             {
                 rankingText.text = BuildRankingDisplay(entries, selfId);
             }
 
-            if (selfRankText != null)
+            if (scoreText != null)
             {
-                if (selfId.HasValue)
+                if (selfEntry != null)
                 {
-                    var selfEntry = ScoreRepository.GetEntryById(selfId.Value);
-                    if (selfEntry != null)
-                    {
-                        selfRankText.text = $"現在の順位: {selfEntry.Rank} 位";
-                    }
-                    else
-                    {
-                        selfRankText.text = "今回のスコアはランキング圏外でした";
-                    }
+                    scoreText.text = $"{selfEntry.Rank}: {selfEntry.ScoreValue.ToString("D3")}";
+                }
+                else if (calculatedRank.HasValue)
+                {
+                    scoreText.text = $"{calculatedRank.Value}: {currentScore.ToString("D3")}";
                 }
                 else if (hasLastEntry)
                 {
-                    selfRankText.text = "今回のスコアはランキング圏外でした";
+                    scoreText.text = $"--: {currentScore.ToString("D3")}";
                 }
                 else
                 {
-                    selfRankText.text = "現在の順位: -";
+                    scoreText.text = currentScore.ToString();
                 }
             }
         }
@@ -82,9 +89,9 @@ public class Script : MonoBehaviour
             {
                 rankingText.text = "ランキングを読み込めませんでした。";
             }
-            if (selfRankText != null)
+            if (scoreText != null)
             {
-                selfRankText.text = "現在の順位: -";
+                scoreText.text = currentScore.ToString();
             }
         }
     }
@@ -97,16 +104,16 @@ public class Script : MonoBehaviour
         }
 
         var builder = new StringBuilder();
+        
         foreach (var entry in entries)
         {
             var isSelf = selfId.HasValue && entry.Id == selfId.Value;
-            builder.AppendFormat("{0,2}位 : {1}", entry.Rank, entry.ScoreValue);
+            builder.Append(entry.Rank).Append(':').Append(' ');
+            builder.Append(entry.ScoreValue.ToString("D3"));
             if (isSelf)
             {
-                builder.Append(" ← 今回");
+                builder.Append(" <= YOU");
             }
-            builder.Append('\n');
-            builder.Append("      ").Append(entry.AchievedAtJst);
             builder.Append('\n');
         }
 
