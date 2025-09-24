@@ -37,7 +37,6 @@ Assets/
 │   ├── MainScene/  
 │   │   ├── MainGameScene.unity   # メインのゲームシーンファイル
 │   │   ├── MainGameSystem.cs     # ゲームのメインシステム。当たり判定、スコア計算やシャチの突き動作などが実装されている。
-│   │   ├── PhysicalControl.cs    # 元々ひれの動きを実装していたもの。現在は使用されていない。
 │   │   ├── Boid.cs               # BoidControllerでの設定に基づいて、魚の動きを実際に制御する。
 │   │   ├── BoidController.cs     # 生成する魚の数とその動き方を設定・制御する。
 │   │   └── move.cs               # オブジェクトの移動処理（現在は仮でWASD移動を実装済み）
