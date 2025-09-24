@@ -46,9 +46,11 @@ public class MainGameSystem : MonoBehaviour
 
     private Renderer renderer;
     private Color originalColor;
+    private bool _scoreSubmitted;
     void Start()
     {
         PointMemory.point = 0;
+        ScoreSessionData.Clear();
         originalPosition = transform.position;
         parentOriginalPosition = transform.parent.position;
 
@@ -85,6 +87,7 @@ public class MainGameSystem : MonoBehaviour
         // スペースキーが押されたらシーンを切り替える
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            SubmitScoreIfNeeded();
             SceneManager.LoadScene("FinishScene");
         }
         // スコアを表示
@@ -146,6 +149,26 @@ public class MainGameSystem : MonoBehaviour
                 spawnedBoidControllers.RemoveAt(i);
                 activeBoidControllers.RemoveAt(i);
             }
+        }
+    }
+
+    private void SubmitScoreIfNeeded()
+    {
+        if (_scoreSubmitted)
+        {
+            return;
+        }
+
+        try
+        {
+            var entry = ScoreRepository.AddScore(PointMemory.point);
+            var stored = entry != null && entry.Rank <= ScoreRepository.MaxEntries;
+            ScoreSessionData.SetLastEntry(entry, stored);
+            _scoreSubmitted = true;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"スコア登録に失敗しました: {ex.Message}");
         }
     }
 
