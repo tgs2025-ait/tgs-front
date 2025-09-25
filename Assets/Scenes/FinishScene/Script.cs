@@ -108,7 +108,6 @@ public class Script : MonoBehaviour
         foreach (var entry in entries)
         {
             var isSelf = selfId.HasValue && entry.Id == selfId.Value;
-            builder.Append(entry.Rank).Append(':').Append(' ');
             builder.Append(entry.ScoreValue.ToString("D3"));
             if (isSelf)
             {
