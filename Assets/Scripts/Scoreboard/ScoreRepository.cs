@@ -149,6 +149,33 @@ public static class ScoreRepository
         }
     }
 
+    public static bool DeleteMostRecentScore()
+    {
+        lock (SyncRoot)
+        {
+            EnsureInitialized();
+
+            var model = _connection.FindWithQuery<ScoreModel>(
+                "SELECT Id, ScoreValue, AchievedAtJst FROM Scores ORDER BY AchievedAtJst DESC, Id DESC LIMIT 1");
+
+            if (model == null)
+            {
+                return false;
+            }
+
+            return _connection.Delete<ScoreModel>(model.Id) > 0;
+        }
+    }
+
+    public static int DeleteAllScores()
+    {
+        lock (SyncRoot)
+        {
+            EnsureInitialized();
+            return _connection.DeleteAll<ScoreModel>();
+        }
+    }
+
     private static SQLiteConnection CreateConnection(string path)
     {
         try
