@@ -6553,6 +6553,7 @@ MonoBehaviour:
   decreaseBreathingTime: 5
   breathing: 1
   moveGroup: {fileID: 1199505631}
+  lowBreathingTexture: {fileID: 2800000, guid: 111d9b0bd724143f79f8fb77ff85fd37, type: 3}
 --- !u!65 &1337005415
 BoxCollider:
   m_ObjectHideFlags: 0

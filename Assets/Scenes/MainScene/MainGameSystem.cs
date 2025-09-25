@@ -44,8 +44,11 @@ public class MainGameSystem : MonoBehaviour
     [Header("シャチオブジェクトの親オブジェクトであるMoveGroupをここにセットしてください")]
     public GameObject moveGroup;
 
-    private Renderer renderer;
+	private Renderer targetRenderer;
     private Color originalColor;
+	private Texture originalTexture;
+	[Header("breathingが閾値以下のときに差し替えるテクスチャ")]
+	public Texture lowBreathingTexture;
     private bool _scoreSubmitted;
     void Start()
     {
@@ -54,12 +57,13 @@ public class MainGameSystem : MonoBehaviour
         originalPosition = transform.position;
         parentOriginalPosition = transform.parent.position;
 
-        // Rendererコンポーネントからマテリアル名を取得して表示
-        renderer = GetComponentInChildren<Renderer>();
-        if (renderer != null && renderer.material != null)
-        {
-            originalColor = renderer.material.color;
-        }
+		// Rendererコンポーネントからマテリアル名を取得して表示
+		targetRenderer = GetComponentInChildren<Renderer>();
+		if (targetRenderer != null && targetRenderer.material != null)
+		{
+			originalColor = targetRenderer.material.color;
+			originalTexture = targetRenderer.material.mainTexture;
+		}
         
         // コルーチンでBoidControllerの自動スポーンを開始
         StartCoroutine(SpawnBoidControllerCoroutine());
@@ -111,15 +115,22 @@ public class MainGameSystem : MonoBehaviour
         // };   
 
 
-        if(breathing <= 0.3f){
-
-            instructionText.text =  Mathf.Floor(breathing * 100f) + "% breath left. Breathe!";
-                renderer.material.color = new Color(1f, 0f, 0f, 0.5f);
-        }else{
-            instructionText.text = "";
-            renderer.material.color = originalColor;
-
-        }
+		if(breathing <= 0.3f){
+			instructionText.text =  Mathf.Floor(breathing * 100f) + "% breath left. Breathe!";
+			if (targetRenderer != null && targetRenderer.material != null)
+			{
+				if (lowBreathingTexture != null)
+				{
+					targetRenderer.material.mainTexture = lowBreathingTexture;
+				}
+			}
+		}else{
+			instructionText.text = "";
+			if (targetRenderer != null && targetRenderer.material != null)
+			{
+				targetRenderer.material.mainTexture = originalTexture;
+			}
+		}
         // 息が切れたときの処理
         if(breathing < 0.1f){
             Debug.Log(GetComponent<CountdownTimer>().countdownTime);
