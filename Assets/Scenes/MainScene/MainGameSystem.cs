@@ -44,8 +44,16 @@ public class MainGameSystem : MonoBehaviour
     [Header("シャチオブジェクトの親オブジェクトであるMoveGroupをここにセットしてください")]
     public GameObject moveGroup;
 
-    private Renderer renderer;
+	private Renderer targetRenderer;
     private Color originalColor;
+	private Texture originalTexture;
+	[Header("breathingが閾値以下のときに差し替えるテクスチャ")]
+	public Texture lowBreathingTexture;
+	[Header("lowBreathingテクスチャの点滅間隔(秒)")]
+	public float lowBreathingTextureToggleInterval = 1.5f;
+	private Coroutine lowBreathingToggleCoroutine;
+	private bool isLowBreathingActive = false;
+	private bool isUsingLowTexture = false;
     private bool _scoreSubmitted;
     void Start()
     {
@@ -54,12 +62,13 @@ public class MainGameSystem : MonoBehaviour
         originalPosition = transform.position;
         parentOriginalPosition = transform.parent.position;
 
-        // Rendererコンポーネントからマテリアル名を取得して表示
-        renderer = GetComponentInChildren<Renderer>();
-        if (renderer != null && renderer.material != null)
-        {
-            originalColor = renderer.material.color;
-        }
+		// Rendererコンポーネントからマテリアル名を取得して表示
+		targetRenderer = GetComponentInChildren<Renderer>();
+		if (targetRenderer != null && targetRenderer.material != null)
+		{
+			originalColor = targetRenderer.material.color;
+			originalTexture = targetRenderer.material.mainTexture;
+		}
         
         // コルーチンでBoidControllerの自動スポーンを開始
         StartCoroutine(SpawnBoidControllerCoroutine());
@@ -111,18 +120,37 @@ public class MainGameSystem : MonoBehaviour
         // };   
 
 
-        if(breathing <= 0.3f){
-
-            instructionText.text =  Mathf.Floor(breathing * 100f) + "% breath left. Breathe!";
-                renderer.material.color = new Color(1f, 0f, 0f, 0.5f);
-        }else{
-            instructionText.text = "";
-            renderer.material.color = originalColor;
-
-        }
+		if(breathing <= 0.3f){
+			instructionText.text =  Mathf.Floor(breathing * 100f) + "% breath left. Breathe!";
+			if (!isLowBreathingActive)
+			{
+				isLowBreathingActive = true;
+				if (lowBreathingToggleCoroutine != null) StopCoroutine(lowBreathingToggleCoroutine);
+				lowBreathingToggleCoroutine = StartCoroutine(LowBreathingTextureToggleCoroutine());
+			}
+		}else{
+			instructionText.text = "";
+			if (isLowBreathingActive)
+			{
+				isLowBreathingActive = false;
+				if (lowBreathingToggleCoroutine != null)
+				{
+					StopCoroutine(lowBreathingToggleCoroutine);
+					lowBreathingToggleCoroutine = null;
+				}
+				if (targetRenderer != null && targetRenderer.material != null)
+				{
+					targetRenderer.material.mainTexture = originalTexture;
+					isUsingLowTexture = false;
+				}
+			}
+		}
         // 息が切れたときの処理
         if(breathing < 0.1f){
             Debug.Log(GetComponent<CountdownTimer>().countdownTime);
+
+            // スコアを3分の1にする
+            PointMemory.point = Mathf.FloorToInt(PointMemory.point / 3f);
             setBreathing(1f);
             GetComponent<CountdownTimer>().countdownTime /= 2f;
             moveGroup.GetComponent<Move>().ThrowOblique();
@@ -214,7 +242,23 @@ public class MainGameSystem : MonoBehaviour
             DecreaseBreathing(decrease);
             yield return new WaitForSeconds(decreaseBreathingTime);
         }
-    }
+	}
+
+	private IEnumerator LowBreathingTextureToggleCoroutine()
+	{
+		while (isLowBreathingActive)
+		{
+			if (targetRenderer != null && targetRenderer.material != null)
+			{
+				if (lowBreathingTexture != null)
+				{
+					targetRenderer.material.mainTexture = isUsingLowTexture ? originalTexture : lowBreathingTexture;
+					isUsingLowTexture = !isUsingLowTexture;
+				}
+			}
+			yield return new WaitForSeconds(lowBreathingTextureToggleInterval);
+		}
+	}
 
     // 本来は毎フレーム呼び出すべきですが、不具合があるため一度だけ呼び出します(Update関数参照)
     void Attack(){
