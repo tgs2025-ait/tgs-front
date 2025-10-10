@@ -6,6 +6,9 @@ using System.IO;
 
 public class SerialHandler : MonoBehaviour
 {
+    private static SerialHandler instance_;
+    public static SerialHandler Instance => instance_;
+
     public delegate void SerialDataReceivedEventHandler(string message);
     public event SerialDataReceivedEventHandler OnDataReceived;
 
@@ -30,6 +33,14 @@ public class SerialHandler : MonoBehaviour
 
     void Awake()
     {
+        if (instance_ != null && instance_ != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance_ = this;
+        DontDestroyOnLoad(gameObject);
         Open();
     }
 
@@ -43,7 +54,11 @@ public class SerialHandler : MonoBehaviour
 
     void OnDestroy()
     {
-        Close();
+        if (instance_ == this)
+        {
+            Close();
+            instance_ = null;
+        }
     }
 
     private void Open()

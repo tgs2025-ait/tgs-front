@@ -7,21 +7,51 @@ public class SerialReceive : MonoBehaviour
 {
     //https://qiita.com/yjiro0403/items/54e9518b5624c0030531
     //上記URLのSerialHandler.cのクラス
-    public SerialHandler serialHandler;
+    [SerializeField] private SerialHandler serialHandler;
+    private bool isSubscribed;
 
     // 静的変数として加速度値と姿勢角度を保存（他のスクリプトからアクセス可能）
     public static float ayAcceleration = 0f; // ayの値を保存する静的変数
     public static float pitchAngle = 0f; // pitch角度を保存する静的変数
     public static float rollAngle = 0f; // roll角度を保存する静的変数
 
+    void Awake()
+    {
+        if (serialHandler == null)
+        {
+            serialHandler = GetComponent<SerialHandler>();
+        }
+
+        if (serialHandler == null)
+        {
+            serialHandler = SerialHandler.Instance;
+        }
+    }
+
     void Start()
     {
-        //信号を受信したときに、そのメッセージの処理を行う
-        serialHandler.OnDataReceived += OnDataReceived;
+        if (serialHandler != null)
+        {
+            serialHandler.OnDataReceived += OnDataReceived;
+            isSubscribed = true;
+        }
+        else
+        {
+            Debug.LogWarning("SerialReceive: SerialHandler が見つからなかったため、受信イベントに登録できませんでした。");
+        }
         
         // 静的変数の初期化確認
         Debug.Log("SerialReceive Start - 静的変数初期化完了");
         Debug.Log($"初期値 - ay: {ayAcceleration}, pitch: {pitchAngle}, roll: {rollAngle}");
+    }
+
+    void OnDestroy()
+    {
+        if (serialHandler != null && isSubscribed)
+        {
+            serialHandler.OnDataReceived -= OnDataReceived;
+            isSubscribed = false;
+        }
     }
 
     //受信した信号(message)に対する処理
