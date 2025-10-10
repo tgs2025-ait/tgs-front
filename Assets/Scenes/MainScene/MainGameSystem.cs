@@ -149,8 +149,8 @@ public class MainGameSystem : MonoBehaviour
         if(breathing < 0.1f){
             Debug.Log(GetComponent<CountdownTimer>().countdownTime);
 
-            // スコアを3分の1にする
-            PointMemory.point = Mathf.FloorToInt(PointMemory.point / 3f);
+            // スコアを50点減らし、0点未満にはしない
+            PointMemory.point = Mathf.Max(PointMemory.point - 50, 0);
             setBreathing(1f);
             GetComponent<CountdownTimer>().countdownTime /= 2f;
             moveGroup.GetComponent<Move>().ThrowOblique();
