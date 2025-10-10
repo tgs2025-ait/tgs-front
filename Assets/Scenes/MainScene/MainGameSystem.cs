@@ -55,6 +55,7 @@ public class MainGameSystem : MonoBehaviour
 	private bool isLowBreathingActive = false;
 	private bool isUsingLowTexture = false;
     private bool _scoreSubmitted;
+    private float penaltyMessageTimer = 0f;
     void Start()
     {
         PointMemory.point = 0;
@@ -113,15 +114,21 @@ public class MainGameSystem : MonoBehaviour
         }
         
 
-        // if(!isAttacking) {
-        //     Attack();  
-        //     isAttacking = true;
-        //     StartCoroutine(UpdateAttackingStateCoroutine());
-        // };   
+		// if(!isAttacking) {
+		//     Attack();  
+		//     isAttacking = true;
+		//     StartCoroutine(UpdateAttackingStateCoroutine());
+		// };   
+
+        penaltyMessageTimer = Mathf.Max(penaltyMessageTimer - Time.deltaTime, 0f);
+        bool isPenaltyActive = penaltyMessageTimer > 0f;
 
 
 		if(breathing <= 0.3f){
-			instructionText.text =  Mathf.Floor(breathing * 100f) + "% breath left. Breathe!";
+			if (!isPenaltyActive)
+			{
+				instructionText.text =  Mathf.Floor(breathing * 100f) + "% breath left. Breathe!";
+			}
 			if (!isLowBreathingActive)
 			{
 				isLowBreathingActive = true;
@@ -129,7 +136,10 @@ public class MainGameSystem : MonoBehaviour
 				lowBreathingToggleCoroutine = StartCoroutine(LowBreathingTextureToggleCoroutine());
 			}
 		}else{
-			instructionText.text = "";
+			if (!isPenaltyActive)
+			{
+				instructionText.text = "";
+			}
 			if (isLowBreathingActive)
 			{
 				isLowBreathingActive = false;
@@ -145,6 +155,10 @@ public class MainGameSystem : MonoBehaviour
 				}
 			}
 		}
+        if (isPenaltyActive)
+        {
+            instructionText.text = "-5s";
+        }
         // 息が切れたときの処理
         if(breathing < 0.1f){
             Debug.Log(GetComponent<CountdownTimer>().countdownTime);
@@ -152,7 +166,10 @@ public class MainGameSystem : MonoBehaviour
             // スコアを50点減らし、0点未満にはしない
             PointMemory.point = Mathf.Max(PointMemory.point - 50, 0);
             setBreathing(1f);
-            GetComponent<CountdownTimer>().countdownTime /= 2f;
+            var countdown = GetComponent<CountdownTimer>();
+            countdown.countdownTime = Mathf.Max(countdown.countdownTime - 5f, 0f);
+            penaltyMessageTimer = 3f;
+            instructionText.text = "-5s";
             moveGroup.GetComponent<Move>().ThrowOblique();
         }
 
